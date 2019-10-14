@@ -29,12 +29,17 @@ if __name__ == "__main__":
     model.start_enqueue_thread(session)
     accumulated_loss = 0.0
 
+    """
     ckpt = tf.train.get_checkpoint_state(log_dir)
     if ckpt and ckpt.model_checkpoint_path:
       print("Restoring from: {}".format(ckpt.model_checkpoint_path))
       saver.restore(session, ckpt.model_checkpoint_path)
+    """
+    model.restore(session)
+    print('restore model success!')
 
     initial_time = time.time()
+    end_steps = 450000
     while True:
       tf_loss, tf_global_step, _ = session.run([model.loss, model.global_step, model.train_op])
       accumulated_loss += tf_loss
@@ -60,3 +65,7 @@ if __name__ == "__main__":
         writer.add_summary(util.make_summary({"max_eval_f1": max_f1}), tf_global_step)
 
         print("[{}] evaL_f1={:.2f}, max_f1={:.2f}".format(tf_global_step, eval_f1, max_f1))
+
+      if tf_global_step > end_steps:
+        print('End at step:%s' % (tf_global_step))
+        exit(0)

@@ -21,6 +21,7 @@ if __name__ == "__main__":
   model = cm.CorefModel(config)
 
   with tf.Session() as session:
+    #model.restore(session, checkpoint_path="logs/best/model-360000")
     model.restore(session)
 
     with open(output_filename, "w") as output_file:

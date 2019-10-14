@@ -84,11 +84,12 @@ class CorefModel(object):
     enqueue_thread.daemon = True
     enqueue_thread.start()
 
-  def restore(self, session):
+  def restore(self, session, checkpoint_path=""):
     # Don't try to restore unused variables from the TF-Hub ELMo module.
     vars_to_restore = [v for v in tf.global_variables() if "module/" not in v.name]
     saver = tf.train.Saver(vars_to_restore)
-    checkpoint_path = os.path.join(self.config["log_dir"], "model.max.ckpt")
+    if not checkpoint_path:
+        checkpoint_path = os.path.join(self.config["log_dir"], "model.max.ckpt")
     print("Restoring from {}".format(checkpoint_path))
     session.run(tf.global_variables_initializer())
     saver.restore(session, checkpoint_path)
